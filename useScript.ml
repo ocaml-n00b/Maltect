@@ -1,8 +1,8 @@
 
 
-#use "Entropy.ml";
+#use "Entropy.ml";;
 #use "basicEntropyAnalysis.ml";;
-#use "advancedTechniques.ml";
+#use "advancedTechniques.ml";;
 
 
 
@@ -13,7 +13,7 @@ let tmpic = open_in "./old/Entropy.o" in
 let size = in_channel_length tmpic in
 (streamByteCount tmpic (-1)), size ;;
 
-let fileEnt = maxLikelihoodEstimator bca n;;
+let fileEnt = maxLikelihoodEstimator bcaF n;;
 
 (* Entropy of 256 byte blocks *)
 let entLst = 
