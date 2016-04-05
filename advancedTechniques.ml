@@ -205,7 +205,28 @@ let fourierFeatures arr nH =
    Array.iteri (fun i a -> if a=fundMag then Array.set feats (nH*2 -1) (float_of_int i) ) wArr ;
    feats;;
    
+(* Desc: return a dyadic array with length = 2^J for some integer J 
+         and J 
+         Test: makeDyadic [|4;6;8;9;4;3;1;5;7;9|];;
+            => (3., [|4; 6; 8; 9; 4; 3; 1; 5|])
+*)
+let makeDyadic timeSeries = 
+   let vJ = floor (log (float_of_int (Array.length timeSeries)) /. log 2.) in
+   (vJ, Array.sub timeSeries 0 (int_of_float (2.** vJ)));;
 
+(* Desc: Return the running sum of an array of floats.
+   Test: getRunSum [|1.;5.;7.;9.;2.|];;
+      => [|1.; 6.; 13.; 22.; 24.|]
+*)
+let getRunSum arr = 
+   let n = Array.length arr in
+   let result = Array.make n 0. in
+   Array.set result 0 (arr.(0));
+   for i = 1 to (n-1) do
+      Array.set result i (result.(i-1) +. arr.(i))
+   done;
+   result;;
+ 
 (* General TODO:
     Maybe change module name to structureAnalysis
   Mean Change Point Modeling 
