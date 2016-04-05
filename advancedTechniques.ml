@@ -226,7 +226,23 @@ let getRunSum arr =
       Array.set result i (result.(i-1) +. arr.(i))
    done;
    result;;
- 
+
+(* Desc: Partition a daydic array in 2^j points per partition.
+   Test: partition [|1;2;3;4;5;6;7;8|] 2;;
+      => [[|1; 2; 3; 4|]; [|5; 6; 7; 8|]]
+         partition [|1;2;3;4;5;6;7;8|] 3;;
+      => [[|1; 2; 3; 4; 5; 6; 7; 8|]]
+*)
+let partition timeSeries j =
+   let width = int_of_float (2.**(float_of_int j)) in
+   let nboxes = (Array.length timeSeries)/width in
+   let rec aux acc n = 
+      if n>0 then aux ((Array.sub timeSeries ((n-1)*width) width )::acc) (n-1)
+      else acc
+   in aux [] nboxes;;
+   
+
+   
 (* General TODO:
     Maybe change module name to structureAnalysis
   Mean Change Point Modeling 
