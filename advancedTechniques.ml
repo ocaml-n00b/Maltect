@@ -156,7 +156,27 @@ let meanChangePoint segLst =
    features;;
 
 
+(* Desc: Internal Funtion. Calculates the iner sum of the naive DFT *)
+let complexInSum n a kf nF=
+  let num = {Complex.re=0.; im=(-6.283185307) } in
+  let num2 = {Complex.re=((float_of_int n)*.kf); im=0. } in
+  let a = {Complex.re=a; im=0. } in
+  let nF = {Complex.re=nF; im=0. } in
+  Complex.mul a (Complex.exp (Complex.mul (Complex.div num nF) num2) );;
 
+(* Get the normalized Fourier Transform of a time series, array of floats. *)
+let discreteFourierTransform timeSeries = 
+  let nN = Array.length timeSeries in
+  let nF = float_of_int nN in
+  let ft = Array.make nN ({Complex.re=0.; im=0.}) in
+  for k = 0 to (nN - 1) do
+    let xk =
+    let kf = float_of_int k in
+    let inSum = Array.mapi (fun n a -> complexInSum n a kf nF) timeSeries in
+    Array.fold_left (Complex.add) ({Complex.re=0.; im=0.}) inSum in
+    Array.set ft k xk
+  done;
+  Array.map (fun a -> (Complex.norm a)/. nF) ft;;
 
 
 
