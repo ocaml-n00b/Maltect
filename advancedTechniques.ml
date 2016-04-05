@@ -185,17 +185,24 @@ let discreteFourierTransform timeSeries =
   Array.set result 0 (result.(0) /. 2.);
   result;;
 
-(* Desc: Extract magnitude and proportion features for up to nH harmonics 
+(* Desc: Extract magnitude and proportion features for up to nH-1 harmonics 
          from an array of floats. 
          Test: fourierFeatures [|2.5; 1.41421356243658836; 1.; 1.41421356218261374|] 4;;
          =>[|2.5; 1.41421356243658836; 1.; 1.41421356218261374; 0.565685424974635365; 0.4;   0.565685424873045517|]
+         TODO?: the ratio between the maximum magnitude and the sum of all the magnitude values
 *)
 let fourierFeatures arr nH =
    let wArr = Array.sub arr 0 nH in
-   let feats = Array.make (nH*2 -1) 0. in
+   let feats = Array.make (nH*2) 0. in
+   (* Add the absolute magnitud of the first nH values *)
    Array.iteri (fun i a -> Array.set feats i a) wArr;
-   let fund = wArr.(0) in
-   Array.iteri (fun i a -> if i>0 then Array.set feats (i+nH-1) (a/.fund) ) wArr;
+   (* Relative amplitude of the nH-1 Harmonics *)
+   let zeroFreq = wArr.(0) in
+   Array.iteri (fun i a -> if i>0 then Array.set feats (i+nH-1) (a/.zeroFreq) ) wArr;
+   (* Add the harmonic with the highest magnitud to the features *)
+   Array.set wArr 0 0.;
+   let fundMag = Array.fold_left (max) neg_infinity wArr in
+   Array.iteri (fun i a -> if a=fundMag then Array.set feats (nH*2 -1) (float_of_int i) ) wArr ;
    feats;;
    
 
