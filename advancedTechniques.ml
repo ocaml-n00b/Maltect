@@ -164,7 +164,12 @@ let complexInSum n a kf nF=
   let nF = {Complex.re=nF; im=0. } in
   Complex.mul a (Complex.exp (Complex.mul (Complex.div num nF) num2) );;
 
-(* Get the normalized Fourier Transform of a time series, array of floats. *)
+(* Get the normalized Fourier Transform of a time series, array of floats. 
+   Test: discreteFourierTransform [|1.;2.;3.;4.|];;
+         => [|2.5; 1.41421356243658836; 1.; 1.41421356218261374|]
+   Test: discreteFourierTransform [|12.|];;
+         => [|12.|]
+*)
 let discreteFourierTransform timeSeries = 
   let nN = Array.length timeSeries in
   let nF = float_of_int nN in
@@ -176,11 +181,23 @@ let discreteFourierTransform timeSeries =
     Array.fold_left (Complex.add) ({Complex.re=0.; im=0.}) inSum in
     Array.set ft k xk
   done;
-  Array.map (fun a -> (Complex.norm a)/. nF) ft;;
+  let result = Array.map (fun a -> (2.*.(Complex.norm a)/. nF) ) ft in
+  Array.set result 0 (result.(0) /. 2.);
+  result;;
 
-
-
-
+(* Desc: Extract magnitude and proportion features for up to nH harmonics 
+         from an array of floats. 
+         Test: fourierFeatures [|2.5; 1.41421356243658836; 1.; 1.41421356218261374|] 4;;
+         =>[|2.5; 1.41421356243658836; 1.; 1.41421356218261374; 0.565685424974635365; 0.4;   0.565685424873045517|]
+*)
+let fourierFeatures arr nH =
+   let wArr = Array.sub arr 0 nH in
+   let feats = Array.make (nH*2 -1) 0. in
+   Array.iteri (fun i a -> Array.set feats i a) wArr;
+   let fund = wArr.(0) in
+   Array.iteri (fun i a -> if i>0 then Array.set feats (i+nH-1) (a/.fund) ) wArr;
+   feats;;
+   
 
 (* General TODO:
     Maybe change module name to structureAnalysis
@@ -190,6 +207,5 @@ TODO: Pruned Exact Linear Time algorithm
         meanRunLength
         stableProp
         entropyRuns
-        
-        
+
 *)
