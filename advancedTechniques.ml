@@ -209,6 +209,7 @@ let fourierFeatures arr nH =
          and J 
          Test: makeDyadic [|4;6;8;9;4;3;1;5;7;9|];;
             => (3., [|4; 6; 8; 9; 4; 3; 1; 5|])
+TODO: Correct to spread the returned values over the original 
 *)
 let makeDyadic timeSeries = 
    let vJ = floor (log (float_of_int (Array.length timeSeries)) /. log 2.) in
@@ -240,18 +241,8 @@ let partition timeSeries j =
       if n>0 then aux ((Array.sub timeSeries ((n-1)*width) width )::acc) (n-1)
       else acc
    in aux [] nboxes;;
-(*
-   Desc: Calculate and return the vecotr operation x'*x.
-   Test: transposeMult [|1.;2.;3.|];;
-      => [|[|1.; 2.; 3.|]; [|2.; 4.; 6.|]; [|3.; 6.; 9.|]|]
-*)
-let transposeMult x =
-   let n = Array.length x in
-   let result = Array.make n x in
-   Array.iteri (fun i a -> Array.set result i (Array.map (fun b -> b*.x.(i)) a)) result;
-   result;;
 
-(* *)
+(* Desc: calculate the slope and intercept using the OLS for a single explanatory variable. *)
 let simpleLinearRegression x y =
    let n,m = Array.length x, Array.length y in
    (if n != m then raise End_of_file); (*make own exception*)
@@ -264,19 +255,12 @@ let simpleLinearRegression x y =
    let beta0 = yMean -. beta1*.xMean in
    (beta1, beta0);;
 
-(*  *)
+(* Desc: Calculate the squared *)
 let squaredError x y model = 
    let a, b = model in 
    Array.mapi (fun i yi -> (yi-. (x.(i)*.a +. b))**2. ) y;;
-   
 
-(* Desc: Fit a linear estamitor with ordinary least squares *)
-let ordinaryLS x y = 
-   let n = Array.length x in 
-   let m = Array.length y in 
-   let beta = Array.make n (Array.make m 0.) in
-   let xInv = Array.make n (Array.make n 0.) in
-
+(* Desc: Make an array with the numbers from 0 to n. *)
 let mkArr n =
    let nI = int_of_float n in
    let result = Array.make nI nan in
@@ -299,12 +283,16 @@ let detrendedFluctuationAnalysis timeSeries =
       let sqrErrLst = List.map2 (fun y b -> squaredError x y b) partLst fits in
       let mSE = meanArr (List.fold_left (Array.append) [||] sqrErrLst) (2.**rJ) in
       Array.set stdRes (j-2) (sqrt mSE)
-   done; stdRes;;
+   done; 
+   let fx = Array.mapi (fun i a -> log(2.**(float_of_int (i+2))) ) stdRes in
+   let logRes = Array.map (log) stdRes in
+   let alpha,_ = simpleLinearRegression fx logRes in
+   alpha;;
    
 (* General TODO:
     Maybe change module name to structureAnalysis
   Mean Change Point Modeling 
-TODO: Pruned Exact Linear Time algorithm
+TODO: Pruned Exact Linear Time (PELT) algorithm
       Feature Extraction: 
         meanRunLength
         stableProp
