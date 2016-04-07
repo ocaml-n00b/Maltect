@@ -240,8 +240,66 @@ let partition timeSeries j =
       if n>0 then aux ((Array.sub timeSeries ((n-1)*width) width )::acc) (n-1)
       else acc
    in aux [] nboxes;;
+(*
+   Desc: Calculate and return the vecotr operation x'*x.
+   Test: transposeMult [|1.;2.;3.|];;
+      => [|[|1.; 2.; 3.|]; [|2.; 4.; 6.|]; [|3.; 6.; 9.|]|]
+*)
+let transposeMult x =
+   let n = Array.length x in
+   let result = Array.make n x in
+   Array.iteri (fun i a -> Array.set result i (Array.map (fun b -> b*.x.(i)) a)) result;
+   result;;
+
+(* *)
+let simpleLinearRegression x y =
+   let n,m = Array.length x, Array.length y in
+   (if n != m then raise End_of_file); (*make own exception*)
+   let n = float_of_int n in
+   let xMean, yMean = meanArr x n, meanArr y n in
+   let xNum = Array.map (fun xi -> xi -. xMean ) x in
+   let beta1Num = Array.mapi (fun i a -> a*.(y.(i)-.yMean)) xNum in
+   let beta1Den = Array.fold_left (+.) 0. (Array.map (fun xi -> xi**2.) xNum) in
+   let beta1 = (Array.fold_left (+.) 0. beta1Num)/.beta1Den in
+   let beta0 = yMean -. beta1*.xMean in
+   (beta1, beta0);;
+
+(*  *)
+let squaredError x y model = 
+   let a, b = model in 
+   Array.mapi (fun i yi -> (yi-. (x.(i)*.a +. b))**2. ) y;;
    
 
+(* Desc: Fit a linear estamitor with ordinary least squares *)
+let ordinaryLS x y = 
+   let n = Array.length x in 
+   let m = Array.length y in 
+   let beta = Array.make n (Array.make m 0.) in
+   let xInv = Array.make n (Array.make n 0.) in
+
+let mkArr n =
+   let nI = int_of_float n in
+   let result = Array.make nI nan in
+   for i = 0 to (nI-1) do
+      Array.set result i (float_of_int i)
+   done;
+   result;;
+
+(* Desc: Detrended Fluctuation Analysis of a time series. *)
+let detrendedFluctuationAnalysis timeSeries = 
+   let rJ,wArr = makeDyadic timeSeries in
+   let mean = meanArr wArr (2.**rJ) in
+   let wArr = Array.map (fun yi -> yi -. mean) wArr in (*? Array.map (fun a -> a/.mean) wArr ?*)
+   let runningSum = getRunSum wArr in
+   let stdRes = Array.make (int_of_float (rJ -. 2.)) 0. in
+   for j= 2 to ((int_of_float rJ) - 1) do
+      let partLst = partition runningSum j in
+      let x = mkArr (2.**(float_of_int j)) in
+      let fits = List.map (fun y -> simpleLinearRegression x y) partLst in
+      let sqrErrLst = List.map2 (fun y b -> squaredError x y b) partLst fits in
+      let mSE = meanArr (List.fold_left (Array.append) [||] sqrErrLst) (2.**rJ) in
+      Array.set stdRes (j-2) (sqrt mSE)
+   done; stdRes;;
    
 (* General TODO:
     Maybe change module name to structureAnalysis
