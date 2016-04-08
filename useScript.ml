@@ -56,7 +56,7 @@ let csvAll headers rowNames data fname =
    let rec aux acc names = function
       | [] -> acc
       | hd::tl -> let name::nametl = names in
-         let strOfFloats = Array.fold_right (fun a b -> (string_of_float a)^", "^b ) hd ";\n" in
+         let strOfFloats = Array.fold_right (fun a b -> (string_of_float a)^", "^b ) hd "\n" in
          let row = name^","^strOfFloats in
          aux (acc^row) nametl tl
    in aux "" rowNames data in

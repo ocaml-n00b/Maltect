@@ -190,6 +190,7 @@ let discreteFourierTransform timeSeries =
          Test: fourierFeatures [|2.5; 1.41421356243658836; 1.; 1.41421356218261374|] 4;;
          =>[|2.5; 1.41421356243658836; 1.; 1.41421356218261374; 0.565685424974635365; 0.4;   0.565685424873045517|]
          TODO?: the ratio between the maximum magnitude and the sum of all the magnitude values
+         TODO: Add 15th harmonic if n >15.
 *)
 let fourierFeatures arr nH =
    let wArr = Array.sub arr 0 nH in
