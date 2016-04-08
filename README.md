@@ -1,4 +1,4 @@
-<h1>What?</h1>
+<h1>MalTect - Virus Scanner</h1>
 <p>
 The intention of this project is to build a set of open source libraries for detecting new virus as a complement to conventional signature based detection software, like ClamAV.
 </p>
@@ -12,27 +12,36 @@ The intention of this project is to build a set of open source libraries for det
 <strong>Blocks:</strong> The files are broken into blocks of 256 bytes from the beginning of the file with no other consideration. The last block may have less than 256 bytes. Each block entropy is calculated by the byte.
 </p>
 
-<h3></h3>
-
+<h3>Analysis</h3>
+<p>
+The block entropy of the files are submitted to different test including basic statistics on the distribution of the values and their sequential analysis for evaluating the file entropy structure.
+</p>
+<p>
+Among the structural analysis techniques used we currently include:
+<ul>
+<li>Mean Change Point Analysis</li>
+<li>Detrended Fluctuation Analysis</li>
+<li>Fourier Transform</li>
+</ul>
+</p>
 
 <h2>Data</h2>
 <p>
-The EntrData CSV file contains the information  related to the basic statistics on the entropy of files that were analyzed in R to determine the model to have a high virus file detection with the least amount of false positive as possible.
+The CSV files contain the information related to the features of the entropy of files that were used to do linear model fit.
+Three files contain all the currently extractable (using this project) information on the files mentioned on the CSVs.
 </p>
 
 <h3>Analysis</h3>
 <p>
-80% of the data was used for training.
-The most simple/effective detection combination was:
-  Mean > 5.4 ; X3Q  > 5.6 ; File > 6.6. 
-With a 67.9% true postive and 0% false positve detection rate.
+The analysis of the files was done in gnuR and the codes and files used can be found in the /stats folder.
+For more details on the csv files /docs/Statistics.html.
 </p>
 <p>
-A simple linear model using all currently available features is:
-88.94%* Over all detection, 76.87%* Virus detection and 6.27% false positive
-
-
-
+A simple linear model using all currently available features achived the following results:
+Over All: 96.85%
+Virus Detection: 93.12%
+False Positives: 1.63%
+This was on the small data set used (133 clean files, 53 viruses)
 *read "Known limitations"
 </p>
 
@@ -51,7 +60,7 @@ The clean files used are unix binary files. This leaves out clean windows .exe f
 <li>Far from enough files were used for testing.</li>
 </ol>
 
-<h2>TODO<h2>
+<h2>TODO</h2>
 <p>
 The following are not in order of priority.
 </p>
