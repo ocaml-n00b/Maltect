@@ -35,7 +35,7 @@ let maxLikelihoodEstimator bca n =
   Desc: Count the number of occurrences of each byte in every n bytes blocks of data in a file 
         and return a list of arrays with the number of observation of each byte value and whether
         the EOF was reached.
-  string -> int -> ( float array list, bool )
+  string -> int -> float array list
   Note: List is in reverse order of blocks in file
 *)
 let blockingByteCount file blockSize = 

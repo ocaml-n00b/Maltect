@@ -15,6 +15,7 @@
     #use "Entropy.ml";;
     #use "basicEntropyAnalysis.ml";;
     #use "advancedTechniques.ml";;
+    #use "predict.ml";;
   </code>
 </p>
 
@@ -23,7 +24,7 @@
   <h3>Full File Entropy</h3>
   To get the average entropy of file we write:
   <code>
-    let (bcaF, error), n =
+    let (bcaF, error), nBytes =
     let tmpic = open_in <em>fname</em> in
     let size = in_channel_length tmpic in
     (streamByteCount tmpic (-1)), size ;;
@@ -35,7 +36,7 @@
   ocurences of the 256 different possible values of a byte in the file
   are counted and stored in order. This is used to calculate the entropy
   of the file:
-  <code>let fileEnt = maxLikelihoodEstimator bcaF n;;</code>
+  <code>let fileEnt = maxLikelihoodEstimator bcaF nBytes;;</code>
 </p>
 
 
@@ -67,15 +68,57 @@
   In that order.
 </p>
 
-  <strong>Structure Analysis</strong>  
+  <strong>Structure Analysis</strong>
 <p>
+For most feature extractions we need the entropy list of the files blocks to be in array form:
+  <code>
+    let timeSeries = Array.of_list entLst;;
+  </code>
+</p>
+
+  <strong>Structure Analysis</strong>
+<p>
+  <strong>Mean Change Point Model</strong> <br>
   To obtain the mean change point fit of the time series using the binary 
   segmentation algorithm and the Scwartz Information Criterion penalty:
   <code>
     let binSegFit = 
-    let timeSeries = Array.of_list entLst in
     let n = Array.length timeSeries in
     binarySegmentation timeSeries fitError (sicPenalty 1. n);;
+  </code>
+</p>
+
+<p>
+  <strong>Mean Change Point Feats</strong> <br>
+  To obtain the mean change point features of the model obtained previously:
+  <code>
+    let featMCP = meanChangePoint binSegFit;;
+  </code>
+</p>
+
+<p>
+  <strong>Detrended Fluctuation Analysis</strong> <br>
+  To obtain the alpha feature of the file we write:
+  <code>
+    let featAlpha = detrendedFluctuationAnalysis timeSeries;;
+  </code>
+</p>
+
+<p>
+  <strong>Fourier Transformation Analysis</strong> <br>
+  To obtain the features from the FT of the file we write:
+  <code>
+    let featFT = 
+    let dFT = discreteFourierTransform timeSeries in
+    fourierFeatures dFT 5;;
+  </code>
+</p>
+
+<p>
+  <strong>Prediction</strong> <br>
+  To obtain a prediction on whether the file is a virus or not you most have a list of coefficients (including the intercept) of a linear regression fit and the corresponding values of the file. There is already a coefficient list available:<br>
+  <code>
+    predictLinear coef <em>calculated_values</em>
   </code>
 </p>
 
@@ -85,3 +128,11 @@
   Get basic stats of a file:
   <code>let bStats = autoSingleFile fname 256;;</code>  
 </p>
+
+<h2>Quick Prediction</h2>
+<p>
+  <code>
+    singleFilePredict fname coef 256;;
+  </code>
+</p>
+
