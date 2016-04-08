@@ -56,13 +56,12 @@ The clean files used are unix binary files. This leaves out clean windows .exe f
 The following are not in order of priority.
 </p>
 <strong>Command line input:</strong> Make it a real program!
-<strong>Structural entropy analysis:</strong> Time series analysis
-<strong>Graphing capabilities:</strong> For ease of testing and viewing, histograms, conventional plots, etc.
-<strong>Better output :</strong> For easy integration with R and other statistics and Machine Learning languages
+<strong>Wavelet Energy Decomposition:</strong> Structural Analysis
+<strong>Better output:</strong> For easy integration with R and other statistics and Machine Learning languages.
 <strong>More virus and non-virus files:</strong> For better fitting.
 <strong>More advanced techniques:</strong> For better detection of newer viruses.
-<strong>Techniques for network analysis:</strong> So not just files can be checked.
 <strong>Abstracting:</strong> To use streams so not just files can be checked. 
-<strong>More Features:</strong> Many more features are required to get better detection.
-<strong>Detection Function:</strong> A function that can load linear (and other) model coefficients for detecting viruses.
+<strong>Techniques for network analysis:</strong> So not just files can be checked.
+<strong>More Features:</strong> Many more features are required to get better detection. Including mixed (interaction) features.
+
 
