@@ -23,15 +23,10 @@ let singleFileMCPFetures fname blockSize =
    binarySegmentation timeSeries fitError (sicPenalty 1. n) in
    meanChangePoint binSeg;;
    
-(* Desc: Return a prediction value  *)
-let singleFilePredict fname coef blockSize =
-   let basic = autoSingleFile fname blockSize in
-   let adv = singleFileMCPFetures fname blockSize in
-   predictLinear coef (basic@(Array.to_list adv));;
    
-(* VERSION 2 - Faster (~30% less time) because it opens the file once (instead of 3 times)
+(* 
    Desc: Return a prediction value *)
-let singleFilePredict_v2 fname coef blockSize = 
+let singleFilePredict_simple fname coef blockSize = 
    let freqLst = blockingByteCount fname blockSize in
    let fileEnt = List.fold_left (fun a b -> 
    Array.mapi (fun i c -> c +. b.(i)) a) (Array.make 256 0.) freqLst in
@@ -62,20 +57,8 @@ let quickMCP timeSeries =
    binarySegmentation timeSeries fitError (sicPenalty 1. n) in
    Array.to_list (meanChangePoint binSeg);;
 
-(* VERSION 3 - More Orginized (~5% slower than VERSION 2)
-   Desc: Return a prediction value *)
-let singleFilePredict_v3 fname coef blockSize = 
-   let freqLst = (blockingByteCount fname blockSize) in
-   let entLst = List.rev (mleList freqLst blockSize) in
-   let fileEnt = bcaFileEntropy freqLst in
-   let stats = entropyStat entLst in
-   let mCP = (let timeSeries = Array.of_list entLst in
-      quickMCP timeSeries) in
-   let vars = fileEnt::(stats@mCP) in
-   predictLinear coef vars;;
-   
 (* Desc: Classify a file as a virus or not. Compare to >0.5 for binary response. *)
-let singleFilePredict_v3_UD fname coef blockSize = 
+let singleFilePredict fname coef blockSize = 
    let freqLst = (blockingByteCount fname blockSize) in
    let entLst = List.rev (mleList freqLst blockSize) in
    let fileEnt = bcaFileEntropy freqLst in
