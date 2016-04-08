@@ -3,6 +3,10 @@
 The intention of this project is to build a set of open source libraries for detecting new virus as a complement to conventional signature based detection software, like ClamAV.
 </p>
 
+<p>
+For more information see the /docs/ folder. It include a <em>Quick Reference</em> guide to try out in the interpreter.
+</p>
+
 <h2>How the values are obtained:</h2>
 <h>
 <p>
@@ -37,11 +41,11 @@ The analysis of the files was done in gnuR and the codes and files used can be f
 For more details on the csv files /docs/Statistics.html.
 </p>
 <p>
-A simple linear model using all currently available features achived the following results:
-Over All: 96.85%
-Virus Detection: 93.12%
-False Positives: 1.63%
-This was on the small data set used (133 clean files, 53 viruses)
+A simple linear model using all currently available features achived the following results:<br>
+Over All: 96.85%* <br>
+Virus Detection: 93.12% <br>
+False Positives: 1.63% <br>
+This was on the small data set used (133 clean files, 53 viruses)<br>
 *read "Known limitations"
 </p>
 
@@ -64,13 +68,13 @@ The clean files used are unix binary files. This leaves out clean windows .exe f
 <p>
 The following are not in order of priority.
 </p>
-<strong>Command line input:</strong> Make it a real program!
-<strong>Wavelet Energy Decomposition:</strong> Structural Analysis
-<strong>Better output:</strong> For easy integration with R and other statistics and Machine Learning languages.
-<strong>More virus and non-virus files:</strong> For better fitting.
-<strong>More advanced techniques:</strong> For better detection of newer viruses.
-<strong>Abstracting:</strong> To use streams so not just files can be checked. 
-<strong>Techniques for network analysis:</strong> So not just files can be checked.
-<strong>More Features:</strong> Many more features are required to get better detection. Including mixed (interaction) features.
+<strong>Command line input:</strong> Make it a real program!<br>
+<strong>Wavelet Energy Decomposition:</strong> Structural Analysis<br>
+<strong>Better output:</strong> For easy integration with R and other statistics and Machine Learning languages.<br>
+<strong>More virus and non-virus files:</strong> For better fitting.<br>
+<strong>More advanced techniques:</strong> For better detection of newer viruses.<br>
+<strong>Abstracting:</strong> To use streams so not just files can be checked. <br>
+<strong>Techniques for network analysis:</strong> So not just files can be checked.<br>
+<strong>More Features:</strong> Many more features are required to get better detection. Including mixed (interaction) features.<br>
 
 
