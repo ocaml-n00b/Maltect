@@ -4,9 +4,10 @@ require (rpart)
 
 basicData = read.csv("EntrData.csv",row.names=1)
 structData = read.csv("struct.csv",row.names=1)
+afftData = read.csv("alphaFT.csv",row.names=1)
 
-allData = data.frame(basicData,structData)
-cleanData = subset(allData, allData$maxJumpSize !=-Inf & allData$minJumpSize !=Inf)
+allData = data.frame(basicData, structData, afftData)
+cleanData = na.omit(allData)
 
 # A function for fitting a data set with two models and returning its predictive success
 modelFunc = function( Data ){
@@ -52,5 +53,5 @@ for (i in 1:n){
 }
 
 avrgRate = sumAll/n
-#Model L = Over All: 89.94; Virus Detection: 78.11; False Pos.: 5.17 
-#Model T = Over All: 91.36; Virus Detection: 79.89; False Pos.: 3.93
+#Model L = Over All: 96.85; Virus Detection: 93.12; False Pos.: 1.63 
+#Model T = Over All: 97.97; Virus Detection: 93.14; False Pos.: 0

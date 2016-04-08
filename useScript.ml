@@ -51,7 +51,7 @@ let autoGetAdv lst =
 
 (* Write a CSV file of a list of floats *)
 let csvAll headers rowNames data fname =
-   let csvHead = List.fold_right (fun a b -> a^", "^b) headers ";\n" in
+   let csvHead = List.fold_right (fun a b -> a^", "^b) headers "\n" in
    let csvBody =
    let rec aux acc names = function
       | [] -> acc
