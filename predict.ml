@@ -11,7 +11,7 @@ let predictLinear coef calc =
    List.fold_left (+.) intercept prodLst;;
    
 (* Move to advancedTechniques.ml
-   Desc: 
+   Desc: Get the Mean Change Point Fetures of a file.
 *)
 let singleFileMCPFetures fname blockSize = 
    let entLst = 
