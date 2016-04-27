@@ -15,8 +15,8 @@ let streamByteCount ic n =
       else
         (bca,false)
     in aux 0 
-  with e ->                      (* some unexpected exception occurs *)
-    close_in_noerr ic;           (* emergency closing *)
+  with e ->                      
+    close_in_noerr ic;           
     (bca,true)    ;;
 
 (* 
