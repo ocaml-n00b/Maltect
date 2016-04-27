@@ -40,8 +40,7 @@ let fitError arr =
     let sd = sdArr arr mean n in
     2.*.( negativeLogLikelihood arr mean sd n );;
 
-(* VERSION 2 - may be faster than v3. TODO: verify perfamace vs v3
-   Desc: Fit the error of a list of segements (arrays). Twice the negative log likelihood is
+(* Desc: Fit the error of a list of segements (arrays). Twice the negative log likelihood is
     used as the cost functio and no penalty is used. Must be applied externally.
    float array list -> float
     TODO: abstract the cost function. Optionally add a penalty function as input.
@@ -52,17 +51,7 @@ let fitListError lst =
     | hd::tl -> aux (error+.(fitError hd)) tl
   in aux 0. lst;;
 
-(* VERSION 3 - more organized
-   Desc: Fit the error of a list of segements (arrays). Twice the negative log likelihood is
-    used as the cost functio and no penalty is used. Must be applied externally.
-   float array list -> float
-    TODO: abstract the cost function. Optionally add a penalty function as input.
-*)
-let fitListError_v3 lst =
-  let fit = List.map (fitError) lst in
-  List.fold_left (+.) 0. fit;;
-
-(* VERSION 3 -> Abstracting
+(* 
   Desc: Use the binary segmentation algorithm to partition a vector and get
          list of tuples with the mean value of the segment and its length.
   Input:
@@ -86,32 +75,6 @@ let binarySegmentation y costFun betaFun =
         else [(n,meanArr arr nf)]) 
       else 
         let costL, costR = (costFun (Array.sub arr 0 i) ), (costFun (Array.sub arr i (n-i)) ) in
-        let cost = costL +. costR +. beta in
-        let nCost, ni = (if cost < cost_1 then (cost,i) else (cost_1,i_1)) in
-        exhaust (i+1) nCost ni
-    in exhaust 1 costChnk 0 
-  in aux y n firstChnk 0 0 ;;
-
-(* VERSION 2 -> Refactoring
-  Desc: Use the binary segmentation algorithm to partition a vector and get
-         list of tuples with the mean value of the segment and its length. *)
-let binarySegmentation_v2 y =
-  let n = Array.length y in 
-  let firstChnk = fitError y in
-  let betaFun = (sicPenalty 1. n) in
-
-  let rec aux arr n costChnk sB l_i =
-    let beta = betaFun(sB) in
-    
-    let rec exhaust i cost_1 i_1 =
-      if i >= n then (
-        let costL, costR = (fitError (Array.sub arr 0 i_1) ), (fitError (Array.sub arr i_1 (n-i_1)) ) in
-        if cost_1 < costChnk then 
-          (aux (Array.sub arr 0 i_1) i_1 costL (sB+1) (l_i) )@(
-           aux (Array.sub arr i_1 (n-i_1)) (n-i_1) costR (sB+1) (l_i+i_1)) 
-        else [(l_i,meanArr arr (float_of_int n))]) 
-      else 
-        let costL, costR = (fitError (Array.sub arr 0 i) ), (fitError (Array.sub arr i (n-i)) ) in
         let cost = costL +. costR +. beta in
         let nCost, ni = (if cost < cost_1 then (cost,i) else (cost_1,i_1)) in
         exhaust (i+1) nCost ni
@@ -153,7 +116,6 @@ let meanChangePoint segLst =
    Array.set features 4 (float_of_int (List.length segLst));
    features;;
 
-
 (* Desc: Internal Funtion. Calculates the iner sum of the naive DFT *)
 let complexInSum n a kf nF=
   let num = {Complex.re=0.; im=(-6.283185307) } in
@@ -163,10 +125,6 @@ let complexInSum n a kf nF=
   Complex.mul a (Complex.exp (Complex.mul (Complex.div num nF) num2) );;
 
 (* Get the normalized Fourier Transform of a time series, array of floats. 
-   Test: discreteFourierTransform [|1.;2.;3.;4.|];;
-         => [|2.5; 1.41421356243658836; 1.; 1.41421356218261374|]
-   Test: discreteFourierTransform [|12.|];;
-         => [|12.|]
 *)
 let discreteFourierTransform timeSeries = 
   let nN = Array.length timeSeries in
@@ -185,9 +143,6 @@ let discreteFourierTransform timeSeries =
 
 (* Desc: Extract magnitude and proportion features for up to nH-1 harmonics 
          from an array of floats. 
-         Test: fourierFeatures [|2.5; 1.41421356243658836; 1.; 1.41421356218261374|] 4;;
-         =>[|2.5; 1.41421356243658836; 1.; 1.41421356218261374; 0.565685424974635365; 0.4;   0.565685424873045517|]
-         TODO?: the ratio between the maximum magnitude and the sum of all the magnitude values
          TODO: Add 15th harmonic if n >15.
 *)
 let fourierFeatures arr nH =
@@ -206,17 +161,13 @@ let fourierFeatures arr nH =
    
 (* Desc: return a dyadic array with length = 2^J for some integer J 
          and J 
-         Test: makeDyadic [|4;6;8;9;4;3;1;5;7;9|];;
-            => (3., [|4; 6; 8; 9; 4; 3; 1; 5|])
-TODO: Correct to spread the returned values over the original 
+   TODO: Correct to spread the returned values over the original 
 *)
 let makeDyadic timeSeries = 
    let vJ = floor (log (float_of_int (Array.length timeSeries)) /. log 2.) in
    (vJ, Array.sub timeSeries 0 (int_of_float (2.** vJ)));;
 
 (* Desc: Return the running sum of an array of floats.
-   Test: getRunSum [|1.;5.;7.;9.;2.|];;
-      => [|1.; 6.; 13.; 22.; 24.|]
 *)
 let getRunSum arr = 
    let n = Array.length arr in
@@ -228,10 +179,6 @@ let getRunSum arr =
    result;;
 
 (* Desc: Partition a daydic array in 2^j points per partition.
-   Test: partition [|1;2;3;4;5;6;7;8|] 2;;
-      => [[|1; 2; 3; 4|]; [|5; 6; 7; 8|]]
-         partition [|1;2;3;4;5;6;7;8|] 3;;
-      => [[|1; 2; 3; 4; 5; 6; 7; 8|]]
 *)
 let partition timeSeries j =
    let width = int_of_float (2.**(float_of_int j)) in
@@ -241,7 +188,7 @@ let partition timeSeries j =
       else acc
    in aux [] nboxes;;
 
-(* Desc: calculate the slope and intercept using the OLS for a single explanatory variable. *)
+(* Desc: Calculate the slope and intercept using the OLS for a single explanatory variable. *)
 let simpleLinearRegression x y =
    let n,m = Array.length x, Array.length y in
    (if n != m then raise End_of_file); (*make own exception*)
@@ -290,11 +237,10 @@ let detrendedFluctuationAnalysis timeSeries =
    
 (* General TODO:
     Maybe change module name to structureAnalysis
-  Mean Change Point Modeling 
+  Mean Change Point Modeling TODO:
 TODO: Pruned Exact Linear Time (PELT) algorithm
       Feature Extraction: 
         meanRunLength
         stableProp
         entropyRuns
-
 *)
