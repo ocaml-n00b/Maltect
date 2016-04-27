@@ -25,8 +25,6 @@ let sicPenalty p n m =
   p*.log10(float_of_int n)*.(float_of_int m);;
 
 (* Desc: Split an array into a list of array given a list of location to break the array.
-   Test: getSegments [| 0;1;2;3;4;5;6;7;8;9|] [3;7] 10
-          Result => [[|0;1;2|];[|3;4;5;6|];[|7;8;9|]]
 *)
 let getSegments arr tau n =
   let rec aux acc pre = function
@@ -85,7 +83,7 @@ let binarySegmentation y costFun betaFun =
         if cost_1 < costChnk then 
           (aux (Array.sub arr 0 i_1) i_1 costL (sB+1) (l_i) )@(
            aux (Array.sub arr i_1 (n-i_1)) (n-i_1) costR (sB+1) (l_i+i_1)) 
-        else [(n,meanArr arr nf)]) (* change l_i for n *)
+        else [(n,meanArr arr nf)]) 
       else 
         let costL, costR = (costFun (Array.sub arr 0 i) ), (costFun (Array.sub arr i (n-i)) ) in
         let cost = costL +. costR +. beta in
